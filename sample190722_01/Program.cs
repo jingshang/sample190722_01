@@ -14,11 +14,26 @@ namespace sample190722_01
 	{
 		public static void Main(string[] args)
 		{
-			CreateWebHostBuilder(args).Build().Run();
+			var config = new ConfigurationBuilder()
+				.SetBasePath(Directory.GetCurrentDirectory())
+				.AddJsonFile("hosting.json", optional: true)
+				.Build();
+
+			//CreateWebHostBuilder(args).Build().Run();
+			var host = new WebHostBuilder()
+				.UseKestrel()
+				.UseUrls("http://localhost:5000", "https://localhost:5001", "http://0.0.0.0:5000", "https://0.0.0.0:5001")
+				.UseContentRoot(Directory.GetCurrentDirectory())
+				.UseIISIntegration()
+				.UseStartup<Startup>()
+				.Build();
+
+			host.Run();
 		}
 
 		public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
 			WebHost.CreateDefaultBuilder(args)
+				.UseKestrel()
 				.UseStartup<Startup>();
 	}
 }
