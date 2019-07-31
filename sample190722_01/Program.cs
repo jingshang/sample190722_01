@@ -22,7 +22,7 @@ namespace sample190722_01
 			//CreateWebHostBuilder(args).Build().Run();
 			var host = new WebHostBuilder()
 				.UseKestrel()
-				//.UseUrls("http://localhost:5000", "https://localhost:5001", "http://0.0.0.0:5000", "https://0.0.0.0:5001")
+				.UseUrls("http://*:5000", "https://*:5001")
 				.UseContentRoot(Directory.GetCurrentDirectory())
 				.UseIISIntegration()
 				.UseStartup<Startup>()
