@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Amazon.DynamoDBv2;
+using Amazon.S3;
+using Amazon.SessionProvider;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -14,11 +17,16 @@ namespace sample190722_01
 {
 	public class Startup
 	{
-		public Startup(IConfiguration configuration)
+		public Startup(IHostingEnvironment env)
 		{
-			Configuration = configuration;
-		}
+			var builder = new ConfigurationBuilder()
+			  .SetBasePath(env.ContentRootPath)
+			  .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+			  .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+			  .AddEnvironmentVariables();
+			Configuration = builder.Build();
 
+		}
 		public IConfiguration Configuration { get; }
 
 		// This method gets called by the runtime. Use this method to add services to the container.
@@ -31,8 +39,12 @@ namespace sample190722_01
 				options.MinimumSameSitePolicy = SameSiteMode.None;
 			});
 
-
 			services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+			services.AddDefaultAWSOptions(Configuration.GetAWSOptions());
+			services.AddAWSService<IAmazonS3>();
+			services.AddAWSService<IAmazonDynamoDB>();
+			//services.AddSession();
+
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
