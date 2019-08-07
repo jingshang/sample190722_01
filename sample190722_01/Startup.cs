@@ -43,7 +43,9 @@ namespace sample190722_01
 			services.AddDefaultAWSOptions(Configuration.GetAWSOptions());
 			services.AddAWSService<IAmazonS3>();
 			services.AddAWSService<IAmazonDynamoDB>();
-			//services.AddSession();
+
+			services.AddDistributedDynamoDbCache(o => { o.TableName = "ASP.NET_SessionState"; }); services.AddAWSService<IAmazonDynamoDB>();
+			services.AddSession();
 
 		}
 
@@ -63,6 +65,7 @@ namespace sample190722_01
 			//app.UseHttpsRedirection();
 			app.UseStaticFiles();
 			app.UseCookiePolicy();
+			app.UseSession();
 
 			app.UseMvc(routes =>
 			{

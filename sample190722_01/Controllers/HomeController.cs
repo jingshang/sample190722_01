@@ -4,11 +4,13 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 using sample190722_01.Models;
 using System.Web;
 using Amazon.S3;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
+
 
 namespace sample190722_01.Controllers
 {
@@ -42,6 +44,12 @@ namespace sample190722_01.Controllers
 		}
 		public IActionResult Index()
 		{
+			HttpContext.Session.SetString("key", "Hoge");
+			var views = (HttpContext.Session.GetInt32("ViewCount") ?? 0) + 1; HttpContext.Session.SetInt32("ViewCount", views); ViewData["Message"] = string.Format("You visited {0} times", views);
+
+			// セッションから文字列を読み込む
+			HttpContext.Session.GetString("key");
+
 			return View();
 		}
 
