@@ -5,6 +5,10 @@ using System.Threading.Tasks;
 using Amazon.DynamoDBv2;
 using Amazon.S3;
 using Amazon.SessionProvider;
+using Amazon.SimpleSystemsManagement;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.DataProtection.Repositories;
+using Session;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -32,20 +36,26 @@ namespace sample190722_01
 		// This method gets called by the runtime. Use this method to add services to the container.
 		public void ConfigureServices(IServiceCollection services)
 		{
-			services.Configure<CookiePolicyOptions>(options =>
-			{
-				// This lambda determines whether user consent for non-essential cookies is needed for a given request.
-				options.CheckConsentNeeded = context => true;
-				options.MinimumSameSitePolicy = SameSiteMode.None;
-			});
 
 			services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
+			// 設定ファイル読込
 			services.AddDefaultAWSOptions(Configuration.GetAWSOptions());
+
+			// AWSのサービスを登録
 			services.AddAWSService<IAmazonS3>();
 			services.AddAWSService<IAmazonDynamoDB>();
+			services.AddAWSService<IAmazonSimpleSystemsManagement>();
 
+			// DynamoDBでセッションを管理する
 			services.AddDistributedDynamoDbCache(o => { o.TableName = "ASP.NET_SessionState"; }); services.AddAWSService<IAmazonDynamoDB>();
 			services.AddSession();
+
+			//PsXmlRepositoryのシングルトンコピーをサービスミドルウェアコレクションに追加
+			services.AddSingleton<IXmlRepository, PsXmlRepository>();//1.クラスのインスタンスをサービス登録
+			//データ保護オプションを構成、PsXmlRepositoryリポジトリを使用して暗号化キーをXMLとして保存します。
+			var sp = services.BuildServiceProvider();//2.サービスをインスタンス化
+			services.AddDataProtection().AddKeyManagementOptions(o => o.XmlRepository = sp.GetService<IXmlRepository>());// 
 
 		}
 

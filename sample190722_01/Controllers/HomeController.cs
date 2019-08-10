@@ -33,13 +33,13 @@ namespace sample190722_01.Controllers
 			var context = new DynamoDBContext(client);
 
 			
-			var item = new Item
-			{
-				SessionId = DateTime.UtcNow.ToString(),
-				aaa = "Fish"+ DateTime.UtcNow.ToString(),
-			};
+			//var item = new Item
+			//{
+			//	SessionId = DateTime.UtcNow.ToString(),
+			//	aaa = "Fish"+ DateTime.UtcNow.ToString(),
+			//};
 
-			context.SaveAsync<Item>(item);
+			//context.SaveAsync<Item>(item);
 
 		}
 		public IActionResult Index()
