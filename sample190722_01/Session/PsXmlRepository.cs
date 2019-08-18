@@ -31,10 +31,11 @@ namespace Session
             return result;
         }
 
-		//StoreElementはXElementを受け取り、「CookieEncryptionKey」に設定された名前とミドルウェアから渡されたフレンドリ名（GUID）をパラメーターとしてパラメーターストアに格納します。
+		// GetAllElements()でCookieEncryptionKeyがAWSのSSMにパラメータが無かったら作成する。
+		// StoreElementはXElementを受け取り、「CookieEncryptionKey」に設定された名前とミドルウェアから渡されたフレンドリ名（GUID）をパラメーターとしてパラメーターストアに格納します。
 		public void StoreElement(XElement element, string friendlyName)
         {
-            var request = new PutParameterRequest
+			var request = new PutParameterRequest
             {
                 Name = "/CookieEncryptionKey/" + friendlyName,
                 Value = element.ToString(),
