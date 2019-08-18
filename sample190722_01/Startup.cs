@@ -53,11 +53,16 @@ namespace sample190722_01
 			services.AddAWSService<IAmazonDynamoDB>();
 			services.AddSession();
 
+			// ミドルウェアが発行する暗号化キーをSSMのパラメータに保存する。
+			// 全てのインスタンスで同じ暗号化キーを利用する。
+			// クライアントの持つ暗号化済みのSessionIDを複合化するキーがすべて同じなので
+			// 全てのインスタンスで同一セッションとして扱える。
+			
 			//PsXmlRepositoryのシングルトンコピーをサービスミドルウェアコレクションに追加
-			//services.AddSingleton<IXmlRepository, PsXmlRepository>();//1.クラスのインスタンスをサービス登録
-			////データ保護オプションを構成、PsXmlRepositoryリポジトリを使用して暗号化キーをXMLとして保存します。
-			//var sp = services.BuildServiceProvider();//2.サービスをインスタンス化
-			//services.AddDataProtection().AddKeyManagementOptions(o => o.XmlRepository = sp.GetService<IXmlRepository>());// 
+			services.AddSingleton<IXmlRepository, PsXmlRepository>();//1.クラスのインスタンスをサービス登録
+			//データ保護オプションを構成、PsXmlRepositoryリポジトリを使用して暗号化キーをXMLとして保存します。
+			var sp = services.BuildServiceProvider();//2.サービスをインスタンス化
+			services.AddDataProtection().AddKeyManagementOptions(o => o.XmlRepository = sp.GetService<IXmlRepository>());// 
 
 		}
 
