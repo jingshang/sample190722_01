@@ -40,7 +40,8 @@ namespace sample190722_01
 			services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
 			// 設定ファイル読込
-			services.AddDefaultAWSOptions(Configuration.GetAWSOptions());
+			var c = Configuration.GetAWSOptions();
+			services.AddDefaultAWSOptions(c);
 
 			// AWSのサービスを登録
 			services.AddAWSService<IAmazonS3>();
@@ -48,14 +49,15 @@ namespace sample190722_01
 			services.AddAWSService<IAmazonSimpleSystemsManagement>();
 
 			// DynamoDBでセッションを管理する
-			services.AddDistributedDynamoDbCache(o => { o.TableName = "ASP.NET_SessionState"; }); services.AddAWSService<IAmazonDynamoDB>();
+			services.AddDistributedDynamoDbCache(o => { o.TableName = "ASP.NET_SessionState"; });
+			services.AddAWSService<IAmazonDynamoDB>();
 			services.AddSession();
 
 			//PsXmlRepositoryのシングルトンコピーをサービスミドルウェアコレクションに追加
-			services.AddSingleton<IXmlRepository, PsXmlRepository>();//1.クラスのインスタンスをサービス登録
-			//データ保護オプションを構成、PsXmlRepositoryリポジトリを使用して暗号化キーをXMLとして保存します。
-			var sp = services.BuildServiceProvider();//2.サービスをインスタンス化
-			services.AddDataProtection().AddKeyManagementOptions(o => o.XmlRepository = sp.GetService<IXmlRepository>());// 
+			//services.AddSingleton<IXmlRepository, PsXmlRepository>();//1.クラスのインスタンスをサービス登録
+			////データ保護オプションを構成、PsXmlRepositoryリポジトリを使用して暗号化キーをXMLとして保存します。
+			//var sp = services.BuildServiceProvider();//2.サービスをインスタンス化
+			//services.AddDataProtection().AddKeyManagementOptions(o => o.XmlRepository = sp.GetService<IXmlRepository>());// 
 
 		}
 

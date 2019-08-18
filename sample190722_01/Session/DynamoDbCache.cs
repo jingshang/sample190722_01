@@ -8,6 +8,40 @@ using Microsoft.Extensions.Options;
 
 namespace Microsoft.Extensions.Caching.DynamoDb
 {
+	/*
+	DynamoDbCache.cs 
+	
+		このクラスは、インターフェイスIDistributedCacheを実装します。
+		コンストラクターで、DynamoDBクライアントとテーブルをインスタンス化し、
+		そのテーブルにDynamoDBからのテーブル定義をロードします。
+		
+		コンストラクターは、TTLフィールド、テーブル名、
+		およびセッションタイムアウトのオプション（ある場合）も読み取ります。
+
+		このクラスは、それぞれのGet、Set、Remove、Refresh、および非同期バージョンのメソッドも実装します。
+		実際、非非同期バージョン（同期バージョン）は単に非同期バージョンをラップし、
+		結果を待機します（無効でない場合）。
+
+		GetAsyncメソッドは、table.GetItemAsync（key）を使用して
+		DynamoDBからアイテムを読み取ることがいかに簡単かを示します。
+		
+		ここで、keyは取得するアイテムのパーティションキーです。
+
+		Get / GetAsync、Set / SetAsync、およびその他のメソッドの呼び出しは、独自のコードではなく、
+		セッションミドルウェアによって行われることを覚えておくことが重要です。
+		
+		Sessionミドルウェアは、ステートバッグ（JSONとしてシリアル化されている）を
+		base64でエンコードし、バイト配列として渡します。
+		
+		SetAsyncメソッドでは、そのバイト配列を単一の属性として格納し、
+		パーティションキー（このためにセッションIDを使用している）、
+		TTL、およびCreateDate（分析またはその他の目的）。
+
+		*注意：これはこのラボで使用するためのサンプルコードであり、
+		* 本番環境と見なすべきではありません。本番アプリケーションに必要なエラー処理、
+		* テスト、またはその他の機能はありません。
+
+	 */
     public class DynamoDbCache : IDistributedCache
     {
         private static IAmazonDynamoDB _client;
@@ -15,7 +49,7 @@ namespace Microsoft.Extensions.Caching.DynamoDb
 
         private string _tableName = "ASP.NET_SessionState";
         private string _ttlfield = "TTL";
-        private int _sessionMinutes = 20;
+        private int _sessionMinutes = 1;
         private enum ExpiryType
         {
             Sliding,

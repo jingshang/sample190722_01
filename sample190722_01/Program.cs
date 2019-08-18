@@ -21,7 +21,13 @@ namespace sample190722_01
 
 			//CreateWebHostBuilder(args).Build().Run();
 			var host = new WebHostBuilder()
-				.UseKestrel()
+				.UseKestrel(options =>
+				{
+					// 最大接続数は100件
+					options.Limits.MaxConcurrentConnections = 100;
+					// リクエスト数は100Mまで
+					options.Limits.MaxRequestBodySize = 100 * 1024 * 1024;
+				})
 				.UseUrls("http://*:5000", "https://*:5001")
 				.UseContentRoot(Directory.GetCurrentDirectory())
 				.UseIISIntegration()
